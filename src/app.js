@@ -5,6 +5,7 @@ const authRouter = require("./modules/auth/auth.route")
 const usersRouter = require("./modules/users/users.route")
 const properiesRouter = require("./modules/properies/properties.route")
 const requestsRouter = require("./modules/requestRole/request.route")
+const bookingRouter = require("./modules/booking/booking.router")
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use("/auth" , authRouter)
 app.use("/users" , usersRouter)
 app.use("/properties" , properiesRouter)
 app.use("/requests" , requestsRouter)
+app.use("/booking" , bookingRouter)
 
 // Not Found Route
 app.use((req, res) => {
