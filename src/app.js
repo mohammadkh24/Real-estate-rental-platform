@@ -3,6 +3,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const authRouter = require("./modules/auth/auth.route")
 const usersRouter = require("./modules/users/users.route")
+const properiesRouter = require("./modules/properies/properties.route")
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(bodyParser.json());
 // Rotes
 app.use("/auth" , authRouter)
 app.use("/users" , usersRouter)
+app.use("/properties" , properiesRouter)
 
 // Not Found Route
 app.use((req, res) => {
