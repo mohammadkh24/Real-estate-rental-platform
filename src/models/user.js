@@ -26,7 +26,7 @@ const schema = mongoose.Schema({
     required: false,
     enum: ["ADMIN", "USER", "LANDLORD"],
   },
-});
+} , {timestamps : true});
 
 schema.pre("save", async function (next) {
   try {

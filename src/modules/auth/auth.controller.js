@@ -3,53 +3,61 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 exports.register = async (req, res) => {
-  const { username, email, password, phoneNumber } = req.body;
+  try {
+    const { username, email, password, phoneNumber } = req.body;
 
-  const countOfUsers = await usersModel.countDocuments();
+    const countOfUsers = await usersModel.countDocuments();
 
-  const user = await usersModel.create({
-    username,
-    email,
-    password,
-    phoneNumber,
-    role: countOfUsers > 0 ? "USER" : "ADMIN",
-  });
+    const user = await usersModel.create({
+      username,
+      email,
+      password,
+      phoneNumber,
+      role: countOfUsers > 0 ? "USER" : "ADMIN",
+    });
 
-  const accessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-    expiresIn: "30 days",
-  });
+    const accessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "30 days",
+    });
 
-  return res.status(201).json({
-    message: "User registered successfully",
-    token: accessToken,
-  });
+    return res.status(201).json({
+      message: "User registered successfully",
+      token: accessToken,
+    });
+  } catch (error) {
+    return res.status(500).json(error);
+  }
 };
 
 exports.login = async (req, res) => {
-  const { username, password } = req.body;
+  try {
+    const { username, password } = req.body;
 
-  const user = await usersModel.findOne({ username });
+    const user = await usersModel.findOne({ username });
 
-  if (!user) {
-    return res.status(404).json({
-      message: "User not found !!",
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found !!",
+      });
+    }
+
+    const isValidPassword = await bcrypt.compare(password, user.password);
+
+    if (!isValidPassword) {
+      return res.status(400).json({
+        message: "Password is not valid !!",
+      });
+    }
+
+    const accessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "30 days",
     });
-  }
 
-  const isValidPassword = await bcrypt.compare(password, user.password);
-
-  if (!isValidPassword) {
-    return res.status(400).json({
-      message: "Password is not valid !!",
+    return res.status(200).json({
+      message: "User logged in successfully",
+      token: accessToken,
     });
+  } catch (error) {
+    return res.status(500).json(error);
   }
-
-  const accessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-    expiresIn: "30 days",
-  });
-
-  return res.status(200).json({
-    message: "User logged in successfully",
-    token: accessToken,
-  });
 };
